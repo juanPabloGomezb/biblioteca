@@ -1,4 +1,6 @@
 export const environment = {
+    production: true,
+    firebaseConfig: {
     apiKey: "AIzaSyCeNG4k1LXremd58PdrI9DMGoZUes5pByY",
     authDomain: "bibliotecaapp2025-1.firebaseapp.com",
     databaseURL: "",
@@ -6,5 +8,5 @@ export const environment = {
     storageBucket: "bibliotecaapp2025-1.firebasestorage.app",
     messagingSenderId: "1026563205679",
     appId: "1:1026563205679:web:c28659f4de9a04d48c34da"
-  
+  }
 };

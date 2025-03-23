@@ -14,7 +14,7 @@ import { getDatabase, provideDatabase } from '@angular/fire/database';
 import {environment} from './environments/environment.prod'
 import { defineCustomElements } from '@ionic/pwa-elements/loader';
 // Inicializa Firebase correctamente
-const firebaseApp = initializeApp(environment);
+const firebaseApp = initializeApp(environment.firebaseConfig);
 
 bootstrapApplication(AppComponent, {
   providers: [
@@ -26,7 +26,7 @@ bootstrapApplication(AppComponent, {
       registrationStrategy: 'registerWhenStable:30000'
     }),
     // Proveedores de Firebase
-    provideFirebaseApp(() => initializeApp(environment)),
+    provideFirebaseApp(() => initializeApp(environment.firebaseConfig)),
     provideFirestore(() => getFirestore()),
     provideAuth(() => getAuth()),
     provideStorage(() => getStorage()),
