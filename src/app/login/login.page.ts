@@ -13,11 +13,13 @@ import {
   IonCheckbox,
   IonIcon,
   ToastController,
-  AlertController
+  AlertController,
+  LoadingController
 } from '@ionic/angular/standalone';
 import { Router } from '@angular/router';
 import { addIcons } from 'ionicons';
 import { logoGoogle } from 'ionicons/icons';
+import { AuthService } from '../services/auth.service';
 
 @Component({
   selector: 'app-login',
@@ -41,21 +43,17 @@ import { logoGoogle } from 'ionicons/icons';
   ]
 })
 export class LoginPage implements OnInit {
-  // Opción 1: Inicializar con ! (non-null assertion operator)
   loginForm!: FormGroup;
   registerForm!: FormGroup;
-  
-  // Alternativa: Inicializar directamente aquí
-  // loginForm: FormGroup = this.formBuilder.group({});
-  // registerForm: FormGroup = this.formBuilder.group({});
-  
   isSignUp: boolean = false;
 
   constructor(
     private formBuilder: FormBuilder,
     private router: Router,
     private toastController: ToastController,
-    private alertController: AlertController
+    private alertController: AlertController,
+    private loadingController: LoadingController,
+    private authService: AuthService // Inyectamos el servicio de autenticación
   ) {
     addIcons({ logoGoogle });
   }
@@ -88,61 +86,59 @@ export class LoginPage implements OnInit {
 
   async login() {
     if (this.loginForm.valid) {
-      // Aquí implementarías la lógica real de autenticación
-      console.log('Login con:', this.loginForm.value);
-      
-      // Simulación de login exitoso
-      const toast = await this.toastController.create({
-        message: 'Login exitoso!',
-        duration: 2000,
-        color: 'success'
-      });
-      toast.present();
-      
-      // Redireccionar al home después del login exitoso
-      // this.router.navigate(['/home']);
+      const loading = await this.showLoading('Iniciando sesión...');
+      try {
+        const { email, password } = this.loginForm.value;
+        const userCredential = await this.authService.loginWithEmail(email, password);
+        
+        await loading.dismiss();
+        this.showSuccessToast('Inicio de sesión exitoso');
+        this.router.navigate(['/home']);
+      } catch (error: any) {
+        await loading.dismiss();
+        this.showErrorToast(this.getAuthErrorMessage(error.code));
+      }
     }
   }
 
   async register() {
     if (this.registerForm.valid) {
-      // Aquí implementarías la lógica real de registro
-      console.log('Registro con:', this.registerForm.value);
-      
-      // Simulación de registro exitoso
-      const toast = await this.toastController.create({
-        message: 'Registro exitoso! Ahora puedes iniciar sesión',
-        duration: 2000,
-        color: 'success'
-      });
-      toast.present();
-      
-      this.isSignUp = false; // Volver a la pantalla de login
+      const loading = await this.showLoading('Creando cuenta...');
+      try {
+        const { email, password, fullName } = this.registerForm.value;
+        const userCredential = await this.authService.registerWithEmail(email, password);
+        
+        // Aquí podrías guardar información adicional como el nombre completo en Firestore
+        
+        await loading.dismiss();
+        this.showSuccessToast('Registro exitoso! Ahora puedes iniciar sesión');
+        this.isSignUp = false; // Volver a la pantalla de login
+      } catch (error: any) {
+        await loading.dismiss();
+        this.showErrorToast(this.getAuthErrorMessage(error.code));
+      }
     }
   }
 
   async loginWithGoogle() {
-    // Aquí implementarías la integración real con Google
-    console.log('Login con Google');
-    
-    const toast = await this.toastController.create({
-      message: 'Login con Google iniciado',
-      duration: 2000,
-      color: 'primary'
-    });
-    toast.present();
+    const loading = await this.showLoading('Iniciando sesión con Google...');
+    try {
+      const userCredential = await this.authService.loginWithGoogle();
+      
+      await loading.dismiss();
+      this.showSuccessToast('Inicio de sesión con Google exitoso');
+      this.router.navigate(['/home']);
+    } catch (error: any) {
+      await loading.dismiss();
+      console.error('Error en login con Google:', error);
+      this.showErrorToast(this.getAuthErrorMessage(error.code));
+    }
   }
 
   async registerWithGoogle() {
-    // Aquí implementarías la integración real con Google para registro
-    console.log('Registro con Google');
-    
-    const toast = await this.toastController.create({
-      message: 'Registro con Google iniciado',
-      duration: 2000,
-      color: 'primary'
-    });
-    toast.present();
+    // En realidad, el proceso es el mismo que loginWithGoogle
+    // Firebase automáticamente creará una cuenta si no existe
+    await this.loginWithGoogle();
   }
 
   async forgotPassword() {
@@ -162,11 +158,17 @@ export class LoginPage implements OnInit {
         },
         {
           text: 'Enviar',
-          handler: (data) => {
+          handler: async (data) => {
             if (data.email) {
-              // Aquí implementarías el envío real de correo de recuperación
-              console.log('Enviar recuperación a:', data.email);
-              this.showRecoveryToast();
+              const loading = await this.showLoading('Enviando correo de recuperación...');
+              try {
+                await this.authService.resetPassword(data.email);
+                loading.dismiss();
+                this.showSuccessToast('Se ha enviado un correo de recuperación');
+              } catch (error: any) {
+                loading.dismiss();
+                this.showErrorToast(this.getAuthErrorMessage(error.code));
+              }
             }
           }
         }
@@ -176,12 +178,63 @@ export class LoginPage implements OnInit {
     await alert.present();
   }
 
-  async showRecoveryToast() {
+  // Método auxiliar para mostrar indicador de carga
+  private async showLoading(message: string) {
+    const loading = await this.loadingController.create({
+      message,
+      spinner: 'circular'
+    });
+    await loading.present();
+    return loading;
+  }
+
+  // Método auxiliar para mostrar mensajes de éxito
+  private async showSuccessToast(message: string) {
     const toast = await this.toastController.create({
-      message: 'Se ha enviado un correo de recuperación',
-      duration: 3000,
+      message,
+      duration: 2000,
       color: 'success'
     });
-    toast.present();
+    await toast.present();
+  }
+
+  // Método auxiliar para mostrar mensajes de error
+  private async showErrorToast(message: string) {
+    const toast = await this.toastController.create({
+      message,
+      duration: 3000,
+      color: 'danger'
+    });
+    await toast.present();
+  }
+
+  // Método para traducir códigos de error de Firebase
+  private getAuthErrorMessage(errorCode: string): string {
+    switch (errorCode) {
+      case 'auth/invalid-email':
+        return 'El correo electrónico no es válido.';
+      case 'auth/user-disabled':
+        return 'Esta cuenta ha sido deshabilitada.';
+      case 'auth/user-not-found':
+        return 'No existe una cuenta con este correo electrónico.';
+      case 'auth/wrong-password':
+        return 'Contraseña incorrecta.';
+      case 'auth/email-already-in-use':
+        return 'Este correo electrónico ya está en uso.';
+      case 'auth/weak-password':
+        return 'La contraseña debe tener al menos 6 caracteres.';
+      case 'auth/popup-closed-by-user':
+        return 'Se cerró la ventana de autenticación antes de completar el proceso.';
+      case 'auth/cancelled-popup-request':
+        return 'La operación fue cancelada debido a múltiples solicitudes.';
+      case 'auth/popup-blocked':
+        return 'El navegador bloqueó la ventana emergente. Habilita las ventanas emergentes para este sitio.';
+      case 'auth/operation-not-allowed':
+        return 'Esta operación no está permitida. Contacta al administrador.';
+      case 'auth/network-request-failed':
+        return 'Error de red. Verifica tu conexión a internet.';
+      default:
+        return 'Ocurrió un error durante la autenticación. Inténtalo de nuevo.';
+    }
   }
 }
