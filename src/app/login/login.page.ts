@@ -53,7 +53,7 @@ export class LoginPage implements OnInit {
     private toastController: ToastController,
     private alertController: AlertController,
     private loadingController: LoadingController,
-    private authService: AuthService // Inyectamos el servicio de autenticación
+    private authService: AuthService
   ) {
     addIcons({ logoGoogle });
   }
@@ -89,11 +89,11 @@ export class LoginPage implements OnInit {
       const loading = await this.showLoading('Iniciando sesión...');
       try {
         const { email, password } = this.loginForm.value;
-        const userCredential = await this.authService.loginWithEmail(email, password);
+        await this.authService.loginWithEmail(email, password);
         
         await loading.dismiss();
         this.showSuccessToast('Inicio de sesión exitoso');
-        this.router.navigate(['/home']);
+        // La redirección ahora la maneja el servicio de autenticación
       } catch (error: any) {
         await loading.dismiss();
         this.showErrorToast(this.getAuthErrorMessage(error.code));
@@ -106,13 +106,11 @@ export class LoginPage implements OnInit {
       const loading = await this.showLoading('Creando cuenta...');
       try {
         const { email, password, fullName } = this.registerForm.value;
-        const userCredential = await this.authService.registerWithEmail(email, password);
-        
-        // Aquí podrías guardar información adicional como el nombre completo en Firestore
+        await this.authService.registerWithEmail(email, password, fullName);
         
         await loading.dismiss();
-        this.showSuccessToast('Registro exitoso! Ahora puedes iniciar sesión');
-        this.isSignUp = false; // Volver a la pantalla de login
+        this.showSuccessToast('Registro exitoso! Bienvenido');
+        // La redirección ahora la maneja el servicio de autenticación
       } catch (error: any) {
         await loading.dismiss();
         this.showErrorToast(this.getAuthErrorMessage(error.code));
@@ -123,11 +121,11 @@ export class LoginPage implements OnInit {
   async loginWithGoogle() {
     const loading = await this.showLoading('Iniciando sesión con Google...');
     try {
-      const userCredential = await this.authService.loginWithGoogle();
+      await this.authService.loginWithGoogle();
       
       await loading.dismiss();
       this.showSuccessToast('Inicio de sesión con Google exitoso');
-      this.router.navigate(['/home']);
+      // La redirección ahora la maneja el servicio de autenticación
     } catch (error: any) {
       await loading.dismiss();
       console.error('Error en login con Google:', error);
