@@ -1,0 +1,103 @@
+ion-content {
+  --background: #0e2a47;
+  --color: white;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.login-container {
+  max-width: 400px;
+  margin: 0 auto;
+  padding: 20px;
+  color: white;
+}
+
+h2 {
+  color: white;
+  text-align: center;
+  font-size: 1.5rem;
+  margin-bottom: 30px;
+}
+
+.buttons-container {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 30px;
+  gap: 10px;
+}
+
+.custom-item {
+  --background: transparent;
+  --border-color: rgba(255, 255, 255, 0.2);
+  --border-width: 0 0 1px 0;
+  --padding-start: 0;
+  margin-bottom: 20px;
+  
+  ion-label {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 0.8rem;
+    font-weight: bold;
+  }
+  
+  ion-input {
+    color: white;
+    --placeholder-color: rgba(255, 255, 255, 0.5);
+    --padding-start: 0;
+    font-size: 1rem;
+    margin-top: 8px;
+  }
+}
+
+ion-button {
+  --border-radius: 4px;
+  margin-top: 30px;
+  text-transform: none;
+  font-weight: bold;
+  height: 48px;
+}
+
+.google-btn {
+  --background: white;
+  --color: #333;
+  margin-top: 15px;
+}
+
+.divider {
+  display: flex;
+  align-items: center;
+  text-align: center;
+  margin: 20px 0;
+  
+  &::before,
+  &::after {
+    content: '';
+    flex: 1;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  }
+  
+  span {
+    padding: 0 10px;
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 0.9rem;
+  }
+}
+
+ion-checkbox {
+  --border-radius: 4px;
+  --size: 18px;
+  --border-color: rgba(255, 255, 255, 0.5);
+  --background-checked: #ff4c4c;
+}
+
+.forgot-password {
+  text-align: center;
+  margin-top: 20px;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.9rem;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+a {
+  color: #ff4c4c;
+  text-decoration: none;
+}

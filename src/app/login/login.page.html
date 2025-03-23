@@ -1,0 +1,80 @@
+<ion-header [translucent]="true">
+  <ion-toolbar color="dark">
+    <ion-title>Login</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="ion-padding">
+  <div class="login-container">
+    <div class="buttons-container">
+      <ion-button color="primary" fill="solid" (click)="signIn()">Sign In</ion-button>
+      <ion-button color="danger" fill="solid" (click)="signUp()">Sign Up</ion-button>
+    </div>
+
+    <form [formGroup]="loginForm" *ngIf="!isSignUp">
+      <h2>Sign In to Your Account</h2>
+      
+      <ion-item class="custom-item">
+        <ion-label position="stacked">E-MAIL</ion-label>
+        <ion-input type="email" formControlName="email" placeholder="Enter your e-mail address"></ion-input>
+      </ion-item>
+      
+      <ion-item class="custom-item">
+        <ion-label position="stacked">PASSWORD</ion-label>
+        <ion-input type="password" formControlName="password" placeholder="••••••••"></ion-input>
+      </ion-item>
+      
+      <ion-button expand="block" color="danger" (click)="login()" [disabled]="!loginForm.valid">
+        Sign In
+      </ion-button>
+      
+      <div class="divider">
+        <span>or</span>
+      </div>
+      
+      <ion-button expand="block" class="google-btn" (click)="loginWithGoogle()">
+        <ion-icon name="logo-google" slot="start"></ion-icon>
+        Continue with Google
+      </ion-button>
+      
+      <p class="forgot-password" (click)="forgotPassword()">Forgot password?</p>
+    </form>
+
+    <form [formGroup]="registerForm" *ngIf="isSignUp">
+      <h2>Create New Account</h2>
+      
+      <ion-item class="custom-item">
+        <ion-label position="stacked">FULL NAME</ion-label>
+        <ion-input type="text" formControlName="fullName" placeholder="Enter your full name"></ion-input>
+      </ion-item>
+      
+      <ion-item class="custom-item">
+        <ion-label position="stacked">E-MAIL</ion-label>
+        <ion-input type="email" formControlName="email" placeholder="Enter your e-mail address"></ion-input>
+      </ion-item>
+      
+      <ion-item class="custom-item">
+        <ion-label position="stacked">PASSWORD</ion-label>
+        <ion-input type="password" formControlName="password" placeholder="••••••••"></ion-input>
+      </ion-item>
+      
+      <ion-item lines="none">
+        <ion-checkbox formControlName="terms" slot="start"></ion-checkbox>
+        <ion-label class="ion-text-wrap">By signing up you agree <a href="#">Terms & Conditions</a></ion-label>
+      </ion-item>
+      
+      <ion-button expand="block" color="danger" (click)="register()" [disabled]="!registerForm.valid">
+        Sign Up
+      </ion-button>
+      
+      <div class="divider">
+        <span>or</span>
+      </div>
+      
+      <ion-button expand="block" class="google-btn" (click)="registerWithGoogle()">
+        <ion-icon name="logo-google" slot="start"></ion-icon>
+        Sign up with Google
+      </ion-button>
+    </form>
+  </div>
+</ion-content>
