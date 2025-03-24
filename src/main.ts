@@ -24,23 +24,11 @@ bootstrapApplication(AppComponent, {
     }),
     
     provideFirebaseApp(() => initializeApp(environment.firebaseConfig)),
-    provideFirestore(() => {
-      const firestore = getFirestore();
-      // Enable offline persistence - but with error handling
-      enableIndexedDbPersistence(firestore)
-        .catch((err) => {
-          console.error('Firestore persistence error:', err.code);
-          if (err.code === 'failed-precondition') {
-            console.warn('Multiple tabs open, persistence can only be enabled in one tab at a time.');
-          } else if (err.code === 'unimplemented') {
-            console.warn('The current browser does not support all of the features required to enable persistence');
-          }
-        });
-      return firestore;
-    }),
+    provideFirestore(() => getFirestore()),
     provideAuth(() => getAuth()),
     provideStorage(() => getStorage()),
     provideDatabase(() => getDatabase()),
+    provideDatabase(() => getDatabase())
   ],
 }).then(() => {
   // Register PWA elements after initialization

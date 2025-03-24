@@ -1,0 +1,35 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>pruebas</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <ion-item>
+    <ion-label position="floating">Texto para subir</ion-label>
+    <ion-input 
+      [(ngModel)]="textToUpload" 
+      placeholder="Escribe algo para subir como archivo"
+    ></ion-input>
+  </ion-item>
+  
+  <ion-button expand="block" (click)="uploadText()">
+    Subir Texto
+  </ion-button>
+
+  <ion-item>
+    <ion-label>Seleccionar Archivo</ion-label>
+    <input 
+      type="file" 
+      (change)="onFileSelected($event)"
+    />
+  </ion-item>
+  
+  <ion-button expand="block" (click)="uploadFile()">
+    Subir Archivo
+  </ion-button>
+
+  <ion-button expand="block" (click)="listFiles()">
+    Listar Archivos
+  </ion-button>
+</ion-content>

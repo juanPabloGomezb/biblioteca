@@ -26,4 +26,8 @@ export const routes: Routes = [
     loadComponent: () => import('./historial/historial.page').then( m => m.HistorialPage),
     canActivate: [GuardianService]
   },
+  {
+    path: 'pruebas',
+    loadComponent: () => import('./pruebas/pruebas.page').then( m => m.PruebasPage)
+  },
 ];

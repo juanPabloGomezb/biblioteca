@@ -93,7 +93,6 @@ export class LoginPage implements OnInit {
         
         await loading.dismiss();
         this.showSuccessToast('Inicio de sesión exitoso');
-        // La redirección ahora la maneja el servicio de autenticación
       } catch (error: any) {
         await loading.dismiss();
         this.showErrorToast(this.getAuthErrorMessage(error.code));
@@ -110,7 +109,6 @@ export class LoginPage implements OnInit {
         
         await loading.dismiss();
         this.showSuccessToast('Registro exitoso! Bienvenido');
-        // La redirección ahora la maneja el servicio de autenticación
       } catch (error: any) {
         await loading.dismiss();
         this.showErrorToast(this.getAuthErrorMessage(error.code));
@@ -125,7 +123,6 @@ export class LoginPage implements OnInit {
       
       await loading.dismiss();
       this.showSuccessToast('Inicio de sesión con Google exitoso');
-      // La redirección ahora la maneja el servicio de autenticación
     } catch (error: any) {
       await loading.dismiss();
       console.error('Error en login con Google:', error);
@@ -176,7 +173,6 @@ export class LoginPage implements OnInit {
     await alert.present();
   }
 
-  // Método auxiliar para mostrar indicador de carga
   private async showLoading(message: string) {
     const loading = await this.loadingController.create({
       message,
@@ -186,7 +182,6 @@ export class LoginPage implements OnInit {
     return loading;
   }
 
-  // Método auxiliar para mostrar mensajes de éxito
   private async showSuccessToast(message: string) {
     const toast = await this.toastController.create({
       message,
@@ -196,7 +191,6 @@ export class LoginPage implements OnInit {
     await toast.present();
   }
 
-  // Método auxiliar para mostrar mensajes de error
   private async showErrorToast(message: string) {
     const toast = await this.toastController.create({
       message,
@@ -206,7 +200,6 @@ export class LoginPage implements OnInit {
     await toast.present();
   }
 
-  // Método para traducir códigos de error de Firebase
   private getAuthErrorMessage(errorCode: string): string {
     switch (errorCode) {
       case 'auth/invalid-email':

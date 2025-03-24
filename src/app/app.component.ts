@@ -16,8 +16,9 @@ export class AppComponent {
   @ViewChildren('menuItem') menuItems!: QueryList<ElementRef>;
   
   public appPages = [
-    { title: 'home', url: '/home/home', icon: 'mail' },
-    { title: 'historial', url: '/historial/historial', icon: 'paper-plane' }
+    { title: 'home', url: '/home', icon: 'mail' },
+    { title: 'historial', url: '/historial', icon: 'paper-plane' },
+    { title: 'pruebas', url: '/pruebas', icon: 'paper-plane' }
   ];
   public labels = ['Family', 'Friends', 'Notes', 'Work', 'Travel', 'Reminders'];
   
