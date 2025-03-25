@@ -69,7 +69,6 @@
       </ion-item>
     </div>
 
-    <!-- Barra de búsqueda -->
     <div class="search-input-container">
       <ion-input
         type="text"
@@ -84,7 +83,6 @@
         Buscar
       </ion-button>
 
-      <!-- Botón para limpiar filtros cuando hay filtros activos -->
       <ion-button
         *ngIf="hasActiveFilters()"
         (click)="clearFilters()"

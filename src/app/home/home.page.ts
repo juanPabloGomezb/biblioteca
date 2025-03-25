@@ -29,7 +29,7 @@ export class HomePage implements OnInit {
   isSearching = false;
   noResultsFound = false;
 
-  // Detailed filter options with more specific categories
+  // Hardcoded filter options
   filterOptions = {
     titulo: [
       { value: '', label: 'Todos los Títulos' },
@@ -219,15 +219,12 @@ export class HomePage implements OnInit {
     return Object.values(this.selectedFilters).some(filter => filter !== '');
   }
 
-  // Método para guardar referencia
   async guardarReferencia(libro: Book) {
-    // Verificar si el usuario está autenticado
     if (!this.authService.isAuthenticated) {
       await this.mostrarAlertaInicioSesion();
       return;
     }
 
-    // Crear un objeto de referencia
     const referencia: Omit<Referencia, 'usuario'> = {
       autor: libro.volumeInfo.authors?.join(', ') || 'Autor desconocido',
       titulo: libro.volumeInfo.title,
@@ -247,7 +244,6 @@ export class HomePage implements OnInit {
     }
   }
 
-  // Método para mostrar alerta de inicio de sesión
   async mostrarAlertaInicioSesion() {
     const alert = await this.alertController.create({
       header: 'Iniciar Sesión',
@@ -260,7 +256,6 @@ export class HomePage implements OnInit {
         {
           text: 'Iniciar Sesión',
           handler: () => {
-            // Navegar a la página de inicio de sesión
             // this.router.navigate(['/login']);
           }
         }
