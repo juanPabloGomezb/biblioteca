@@ -1,0 +1,78 @@
+.library-search-container {
+    padding: 10px;
+    background-color: #f4f5f8;
+  }
+  
+  .search-type-buttons {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+  
+    ion-button {
+      flex-grow: 1;
+      margin: 0 5px;
+      --border-radius: 8px;
+      height: 45px;
+      font-size: 0.9em;
+    }
+  }
+  
+  .custom-searchbar {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    margin: 10px 0;
+  }
+  
+  ion-content {
+    --background: #f4f5f8;
+  }
+  
+  ion-list {
+    background: transparent;
+  }
+  
+  ion-item {
+    --background: white;
+    --border-radius: 10px;
+    margin: 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  ion-thumbnail {
+    width: 80px;
+    height: 120px;
+    margin-right: 15px;
+  
+    img {
+      object-fit: cover;
+      border-radius: 5px;
+    }
+  }
+  
+  .no-books-placeholder {
+    text-align: center;
+    color: #888;
+    padding: 20px;
+    background-color: white;
+    border-radius: 10px;
+    margin: 0 10px;
+  }
+  
+  .no-image-icon {
+    font-size: 50px;
+    color: #ddd;
+  }
+  
+  // Responsive adjustments
+  @media (max-width: 600px) {
+    .search-type-buttons {
+      flex-wrap: wrap;
+  
+      ion-button {
+        flex-basis: calc(50% - 10px);
+        margin: 5px;
+      }
+    }
+  }
