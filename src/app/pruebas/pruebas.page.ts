@@ -12,6 +12,7 @@ import {
   IonLabel
 } from '@ionic/angular/standalone';
 import { FirestoreService } from '../services/firestore/firestore.service';
+import { Auth } from '@angular/fire/auth';
 
 @Component({
   selector: 'app-pruebas',
@@ -34,10 +35,15 @@ import { FirestoreService } from '../services/firestore/firestore.service';
 export class PruebasPage implements OnInit {
   textToUpload: string = '';
   fileToUpload: File | null = null;
+  referencias: any[] = [];
 
-  constructor(private firestoreService: FirestoreService) { }
+  constructor(
+    private firestoreService: FirestoreService,
+    private auth: Auth
+  ) { }
 
   ngOnInit() {
+    this.obtenerReferencias();
   }
 
   async uploadText() {
@@ -76,5 +82,22 @@ export class PruebasPage implements OnInit {
     } catch (error) {
       console.error('Error al listar archivos:', error);
     }
+  }
+
+  obtenerReferencias() {
+    const usuarioId = this.auth.currentUser?.uid;
+
+    if (!usuarioId) {
+      console.warn('No hay usuario autenticado.');
+      return;
+    }
+
+    this.firestoreService.obtenerReferencias(usuarioId).subscribe({
+      next: (data: any[]) => {  // Especificamos que 'data' es un array de 'any'
+        this.referencias = data;
+        console.log('Referencias obtenidas:', this.referencias);
+      },
+      error: (error: any) => console.error('Error al obtener referencias:', error)
+    });
   }
 }

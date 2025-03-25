@@ -9,13 +9,19 @@ import {
   deleteObject 
 } from '@angular/fire/storage';
 
+import { Firestore, collection, addDoc, collectionData, query, where, Timestamp } from '@angular/fire/firestore';
+import { Observable } from 'rxjs';
+
 @Injectable({
   providedIn: 'root'
 })
 export class FirestoreService {
-  constructor(private storage: Storage) { }
+  constructor(private storage: Storage, private firestore: Firestore) { }
 
-  // Método para subir un texto simple como un archivo
+  // =======================
+  // 🔥 FIREBASE STORAGE
+  // =======================
+
   async uploadTextFile(text: string, path: string) {
     try {
       const storageRef = ref(this.storage, path);
@@ -28,7 +34,6 @@ export class FirestoreService {
     }
   }
 
-  // Método para subir un archivo binario
   async uploadFile(file: File, path: string) {
     try {
       const storageRef = ref(this.storage, path);
@@ -41,7 +46,6 @@ export class FirestoreService {
     }
   }
 
-  // Método para obtener la URL de descarga de un archivo
   async getFileDownloadURL(path: string) {
     try {
       const storageRef = ref(this.storage, path);
@@ -54,7 +58,6 @@ export class FirestoreService {
     }
   }
 
-  // Método para listar archivos en una carpeta
   async listFiles(path: string) {
     try {
       const listRef = ref(this.storage, path);
@@ -67,7 +70,6 @@ export class FirestoreService {
     }
   }
 
-  // Método para eliminar un archivo
   async deleteFile(path: string) {
     try {
       const storageRef = ref(this.storage, path);
@@ -77,5 +79,44 @@ export class FirestoreService {
       console.error('Error al eliminar archivo:', error);
       throw error;
     }
+  }
+
+  // =======================
+  // 🔥 FIRESTORE DATABASE
+  // =======================
+
+  // Guardar referencia en Firestore
+  async guardarReferencia(usuarioId: string, titulo: string, url: string, etiquetas: string[]) {
+    try {
+      const referenciaCollection = collection(this.firestore, 'referencias');
+
+      const referencia = {
+        usuario: usuarioId,
+        titulo: titulo,
+        url: url,
+        etiquetas: etiquetas,
+        fechaGuardado: Timestamp.now() // Agregar marca de tiempo
+      };
+
+      await addDoc(referenciaCollection, referencia);
+      console.log('✅ Referencia guardada en Firestore:', referencia);
+    } catch (error) {
+      console.error('❌ Error al guardar referencia:', error);
+      throw error;
+    }
+  }
+
+  // Obtener referencias de Firestore por usuario
+  obtenerReferencias(usuarioId: string): Observable<any[]> {
+    const referenciaCollection = collection(this.firestore, 'referencias');
+    const q = query(referenciaCollection, where('usuario', '==', usuarioId));
+    return collectionData(q, { idField: 'id' }) as Observable<any[]>;
+  }
+
+  // Obtener referencias por etiqueta
+  obtenerReferenciasPorEtiqueta(etiqueta: string): Observable<any[]> {
+    const referenciaCollection = collection(this.firestore, 'referencias');
+    const q = query(referenciaCollection, where('etiquetas', 'array-contains', etiqueta));
+    return collectionData(q, { idField: 'id' }) as Observable<any[]>;
   }
 }
