@@ -1,12 +1,14 @@
 .library-search-container {
   padding: 10px;
   background-color: #000000;
+  color: #ddd;
 }
 
 .search-type-buttons {
   display: flex;
   justify-content: space-between;
   margin-bottom: 10px;
+  background-color: #ddd;
 
   ion-button {
     flex-grow: 1;
@@ -14,6 +16,7 @@
     --border-radius: 8px;
     height: 45px;
     font-size: 0.9em;
+    background-color: #ddd;
   }
 }
 
@@ -69,10 +72,14 @@ ion-thumbnail {
 @media (max-width: 600px) {
   .search-type-buttons {
     flex-wrap: wrap;
+    color: #ddd;
+    background-color: #ddd;
 
     ion-button {
       flex-basis: calc(50% - 10px);
       margin: 5px;
+      color: #ddd;
+      background-color: #ddd;
     }
   }
 }
