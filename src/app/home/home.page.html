@@ -6,66 +6,46 @@
 
 <ion-content>
   <div class="library-search-container">
-    <!-- Filtros con Ion-Select -->
+    <!-- Filtros con categorías -->
     <div class="filter-select-container">
       <!-- Título Filter -->
       <ion-item>
         <ion-label>Título</ion-label>
-        <ion-select 
-          [(ngModel)]="selectedFilters.titulo" 
-          (ionChange)="onFilterChange()"
-          placeholder="Seleccionar Título">
-          <ion-select-option 
-            *ngFor="let option of filterOptions.titulo" 
-            [value]="option.value">
-            {{ option.label }}
-          </ion-select-option>
-        </ion-select>
+        <div class="category-container">
+          <ion-button *ngFor="let category of tituloCategories" (click)="filterTitulo(category)">
+            {{ category }}
+          </ion-button>
+        </div>
       </ion-item>
 
       <!-- Autor Filter -->
       <ion-item>
         <ion-label>Autor</ion-label>
-        <ion-select 
-          [(ngModel)]="selectedFilters.autor" 
-          (ionChange)="onFilterChange()"
-          placeholder="Seleccionar Autor">
-          <ion-select-option 
-            *ngFor="let option of filterOptions.autor" 
-            [value]="option.value">
-            {{ option.label }}
-          </ion-select-option>
-        </ion-select>
+        <div class="category-container">
+          <ion-button *ngFor="let category of autorCategories" (click)="filterAutor(category)">
+            {{ category }}
+          </ion-button>
+        </div>
       </ion-item>
 
       <!-- Tema Filter -->
       <ion-item>
         <ion-label>Tema</ion-label>
-        <ion-select 
-          [(ngModel)]="selectedFilters.tema" 
-          (ionChange)="onFilterChange()"
-          placeholder="Seleccionar Tema">
-          <ion-select-option 
-            *ngFor="let option of filterOptions.tema" 
-            [value]="option.value">
-            {{ option.label }}
-          </ion-select-option>
-        </ion-select>
+        <div class="category-container">
+          <ion-button *ngFor="let category of temaCategories" (click)="filterTema(category)">
+            {{ category }}
+          </ion-button>
+        </div>
       </ion-item>
 
       <!-- Idioma Filter -->
       <ion-item>
         <ion-label>Idioma</ion-label>
-        <ion-select 
-          [(ngModel)]="selectedFilters.idioma" 
-          (ionChange)="onFilterChange()"
-          placeholder="Seleccionar Idioma">
-          <ion-select-option 
-            *ngFor="let option of filterOptions.idioma" 
-            [value]="option.value">
-            {{ option.label }}
-          </ion-select-option>
-        </ion-select>
+        <div class="category-container">
+          <ion-button *ngFor="let category of idiomaCategories" (click)="filterIdioma(category)">
+            {{ category }}
+          </ion-button>
+        </div>
       </ion-item>
     </div>
 
@@ -77,7 +57,7 @@
       </ion-input>
 
       <ion-button
-        (click)="searchBooks()"
+        (click)="searchBooks()" color="success"
         color="primary">
         <ion-icon name="search"></ion-icon>
         Buscar
@@ -127,9 +107,9 @@
           <p>Idioma: {{ book.volumeInfo.language || 'N/A' }}</p>
         </ion-label>
 
-        <ion-button 
-          slot="end" 
-          size="small" 
+        <ion-button
+          slot="end"
+          size="small"
           (click)="guardarReferencia(book)"
           color="secondary">
           <ion-icon name="bookmark-outline"></ion-icon>

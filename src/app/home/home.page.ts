@@ -28,6 +28,33 @@ export class HomePage implements OnInit {
   isLoading = false;
   isSearching = false;
   noResultsFound = false;
+  tituloCategories = ['Novela', 'Ciencia Ficción', 'Historia', 'Poesía', 'Biografía', 'Ensayo'];
+  autorCategories = ['Nacional', 'Internacional', 'Contemporáneo', 'Clásico'];
+  temaCategories = ['Educación', 'Tecnología', 'Naturaleza', 'Política', 'Psicología', 'Arte'];
+  idiomaCategories = ['Español', 'Inglés', 'Francés', 'Alemán', 'Portugués', 'Italiano'];
+  filterTitulo(category: string) {
+    // Lógica para filtrar por título
+    // Actualiza la lista de libros 'books' en base a la categoría seleccionada
+    console.log('Filtrando por título:', category);
+  }
+
+  filterAutor(category: string) {
+    // Lógica para filtrar por autor
+    // Actualiza la lista de libros 'books' en base a la categoría seleccionada
+    console.log('Filtrando por autor:', category);
+  }
+
+  filterTema(category: string) {
+    // Lógica para filtrar por tema
+    // Actualiza la lista de libros 'books' en base a la categoría seleccionada
+    console.log('Filtrando por tema:', category);
+  }
+
+  filterIdioma(category: string) {
+    // Lógica para filtrar por idioma
+    // Actualiza la lista de libros 'books' en base a la categoría seleccionada
+    console.log('Filtrando por idioma:', category);
+  }
 
   // Hardcoded filter options
   filterOptions = {
@@ -146,9 +173,9 @@ export class HomePage implements OnInit {
       .subscribe({
         next: (response) => {
           loading.dismiss();
-          
+
           console.log('Respuesta de búsqueda:', response);
-          
+
           if (response.items && response.items.length > 0) {
             this.books = response.items;
             this.totalItems = response.totalItems;
@@ -181,7 +208,7 @@ export class HomePage implements OnInit {
   loadMoreBooks(event: any) {
     if (this.books.length < this.totalItems) {
       this.currentStartIndex += 10;
-      
+
       const searchParams: BookSearch = {
         query: this.searchQuery?.trim() || '',
         filters: this.selectedFilters
