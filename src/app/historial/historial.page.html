@@ -1,6 +1,13 @@
-<ion-header [translucent]="true">
+<!-- Estructura HTML -->
+<ion-header>
   <ion-toolbar>
     <ion-title>Historial de Referencias</ion-title>
+    <ion-buttons slot="end">
+      <ion-button [routerLink]="['/home']">
+        <ion-icon name="home-outline"></ion-icon>
+        Inicio
+      </ion-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
@@ -12,33 +19,42 @@
   </ion-header>
 
   <!-- Mensaje cuando no hay referencias -->
-  <div *ngIf="!(referencias$ | async)?.length" class="no-referencias-container">
-    <ion-text color="medium">
+  <div *ngIf="!(referencias$ | async)?.length" class="empty-state-container">
+    <div class="empty-state-content">
+      <ion-icon name="document-outline" class="empty-state-icon"></ion-icon>
       <h2>No hay referencias guardadas</h2>
       <p>Guarda tus primeras referencias desde la biblioteca</p>
-    </ion-text>
+    </div>
   </div>
 
-  <!-- Lista de referencias -->
-  <ion-list *ngIf="referencias$ | async as referencias">
-    <ion-item-sliding *ngFor="let referencia of referencias">
-      <ion-item>
-        <ion-label>
-          <h2>{{ referencia.titulo }}</h2>
-          <p>Autor: {{ referencia.autor }}</p>
-          <p>Fecha: {{ referencia.fechaguardado | date:'dd/MM/yyyy' }}</p>
-          <ion-badge *ngFor="let etiqueta of referencia.etiquetas" color="light" class="ion-margin-end">
+  <!-- Grid de tarjetas de referencias -->
+  <div class="referencias-grid" *ngIf="referencias$ | async as referencias">
+    <div class="referencia-card" *ngFor="let referencia of referencias">
+      <div class="card-header">
+        <h2>{{ referencia.titulo }}</h2>
+        <ion-button fill="clear" color="medium" (click)="eliminarReferencia(referencia.id)">
+          <ion-icon name="trash-outline"></ion-icon>
+        </ion-button>
+      </div>
+      
+      <div class="card-body">
+        <div class="card-details">
+          <div class="detail-item">
+            <ion-icon name="person-outline"></ion-icon>
+            <span>{{ referencia.autor }}</span>
+          </div>
+          <div class="detail-item">
+            <ion-icon name="calendar-outline"></ion-icon>
+            <span>{{ referencia.fechaguardado | date:'dd/MM/yyyy' }}</span>
+          </div>
+        </div>
+
+        <div class="card-tags">
+          <ion-badge *ngFor="let etiqueta of referencia.etiquetas" color="light">
             {{ etiqueta }}
           </ion-badge>
-        </ion-label>
-      </ion-item>
-
-      <ion-item-options side="end">
-        <ion-item-option color="danger" (click)="eliminarReferencia(referencia.id)">
-          <ion-icon name="trash"></ion-icon>
-          Eliminar
-        </ion-item-option>
-      </ion-item-options>
-    </ion-item-sliding>
-  </ion-list>
+        </div>
+      </div>
+    </div>
+  </div>
 </ion-content>

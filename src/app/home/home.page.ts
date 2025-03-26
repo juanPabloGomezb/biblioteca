@@ -6,6 +6,7 @@ import { IonicModule, LoadingController, ToastController, AlertController } from
 import { BooksService, Book, BookSearch } from '../services/biblioteca/books.service';
 import { ReferenciaService, Referencia } from '../services/referencia.service';
 import { AuthService } from '../services/auth.service';
+import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-home',
@@ -16,7 +17,8 @@ import { AuthService } from '../services/auth.service';
     CommonModule,
     FormsModule,
     HttpClientModule,
-    IonicModule
+    IonicModule,
+    RouterModule  
   ],
   providers: [BooksService, ReferenciaService]
 })
@@ -56,7 +58,7 @@ export class HomePage implements OnInit {
     this.loadInitialBooks();
   }
 
-  // Updated filter methods to work with the current HTML structure
+  // Filter methods
   filterTitulo(category: string) {
     this.selectedFilters.titulo = this.selectedFilters.titulo === category ? '' : category;
     this.searchBooks();
@@ -77,41 +79,19 @@ export class HomePage implements OnInit {
     this.searchBooks();
   }
 
+  // Load initial books
   async loadInitialBooks() {
     const loading = await this.loadingController.create({
       message: 'Cargando libros...'
     });
     await loading.present();
 
-    this.booksService.getInitialBooks()
-      .subscribe({
-        next: (response) => {
-          loading.dismiss();
-          if (response.items && response.items.length > 0) {
-            this.books = response.items;
-            this.totalItems = response.totalItems;
-            this.noResultsFound = false;
-            this.isSearching = false;
-          } else {
-            this.presentToast('No se encontraron libros');
-            this.noResultsFound = true;
-          }
-        },
-        error: async (error) => {
-          await loading.dismiss();
-          this.presentToast('Error al cargar libros');
-          this.noResultsFound = true;
-        }
-      });
+    this.currentStartIndex = 0;
+    this.searchOrLoadBooks(() => loading.dismiss());
   }
 
+  // Search books
   async searchBooks() {
-    // Prevent unnecessary searches
-    if (!this.searchQuery && !this.hasActiveFilters()) {
-      this.loadInitialBooks();
-      return;
-    }
-
     const loading = await this.loadingController.create({
       message: 'Buscando libros...'
     });
@@ -122,35 +102,65 @@ export class HomePage implements OnInit {
     this.isSearching = true;
     this.noResultsFound = false;
 
+    this.searchOrLoadBooks(() => loading.dismiss());
+  }
+
+  // Manual load more books
+  loadMoreBooksManually() {
+    this.currentStartIndex += 10;
+    this.searchOrLoadBooks();
+  }
+
+  // Infinite scroll load more
+  loadMoreBooks(event: any) {
+    if (this.books.length < this.totalItems) {
+      this.currentStartIndex += 10;
+      this.searchOrLoadBooks(() => event.target.complete());
+    } else {
+      event.target.complete();
+    }
+  }
+
+  // Centralized search and load method
+  private searchOrLoadBooks(onComplete?: () => void) {
     const searchParams: BookSearch = {
       query: this.searchQuery?.trim() || '',
       filters: this.selectedFilters
     };
-
+  
+    this.isLoading = true;
+  
     this.booksService.searchBooks(searchParams, this.currentStartIndex)
       .subscribe({
         next: (response) => {
-          loading.dismiss();
-
-          if (response.items && response.items.length > 0) {
-            this.books = response.items;
+          if (response.items) {
+            // Filtrar libros duplicados antes de añadirlos
+            const newBooks = response.items.filter(
+              newBook => !this.books.some(existingBook => existingBook.id === newBook.id)
+            );
+  
+            this.books = [...this.books, ...newBooks];
             this.totalItems = response.totalItems;
-            this.isSearching = false;
-            this.noResultsFound = false;
-          } else {
-            this.noResultsFound = true;
-            this.presentToast('No se encontraron libros');
+            this.isLoading = false;
+            this.noResultsFound = this.books.length === 0;
+            
+            if (onComplete) {
+              onComplete();
+            }
           }
         },
-        error: async (error) => {
-          await loading.dismiss();
-          this.isSearching = false;
-          this.noResultsFound = true;
-          this.presentToast('Error al buscar libros');
+        error: (error) => {
+          this.presentToast('Error al cargar libros');
+          this.isLoading = false;
+          
+          if (onComplete) {
+            onComplete();
+          }
         }
       });
   }
 
+  // Toast presentation method
   async presentToast(message: string) {
     const toast = await this.toastController.create({
       message: message,
@@ -160,34 +170,8 @@ export class HomePage implements OnInit {
     await toast.present();
   }
 
-  loadMoreBooks(event: any) {
-    if (this.books.length < this.totalItems) {
-      this.currentStartIndex += 10;
-
-      const searchParams: BookSearch = {
-        query: this.searchQuery?.trim() || '',
-        filters: this.selectedFilters
-      };
-
-      this.booksService.searchBooks(searchParams, this.currentStartIndex)
-        .subscribe({
-          next: (response) => {
-            if (response.items) {
-              this.books = [...this.books, ...response.items];
-            }
-            event.target.complete();
-          },
-          error: () => {
-            event.target.complete();
-          }
-        });
-    } else {
-      event.target.complete();
-    }
-  }
-
+  // Clear filters
   clearFilters() {
-    // Reset all filters to their initial state
     this.selectedFilters = {
       titulo: '',
       autor: '',
@@ -198,10 +182,12 @@ export class HomePage implements OnInit {
     this.loadInitialBooks();
   }
 
+  // Check if any filter is active
   hasActiveFilters(): boolean {
     return Object.values(this.selectedFilters).some(filter => filter !== '');
   }
 
+  // Save reference
   async guardarReferencia(libro: Book) {
     if (!this.authService.isAuthenticated) {
       await this.mostrarAlertaInicioSesion();
@@ -227,6 +213,7 @@ export class HomePage implements OnInit {
     }
   }
 
+  // Login alert
   async mostrarAlertaInicioSesion() {
     const alert = await this.alertController.create({
       header: 'Iniciar Sesión',

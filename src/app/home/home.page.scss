@@ -1,35 +1,97 @@
+// Color Palette
+$background-dark: #121212;
+$background-light: #1e1e1e;
+$primary-color: #3498db;
+$secondary-color: #2ecc71;
+$filter-button-color: #4CAF50;
+$text-color-light: #f4f4f4;
+$text-color-muted: #b0b0b0;
+$border-color: #333;
+
 .library-search-container {
-  padding: 10px;
-  background-color: #000000;
-  color: #ddd;
+  padding: 20px;
+  background-color: $background-dark;
+  color: $text-color-light;
+  border-radius: 12px;
 }
 
-.search-type-buttons {
+.filter-select-container {
   display: flex;
-  justify-content: space-between;
-  margin-bottom: 10px;
-  background-color: #ddd;
+  flex-wrap: wrap;
+  gap: 15px;
+  margin-bottom: 20px;
 
-  ion-button {
-    flex-grow: 1;
-    margin: 0 5px;
-    --border-radius: 8px;
-    height: 45px;
-    font-size: 0.9em;
-    background-color: #ddd;
+  ion-item {
+    flex: 1;
+    min-width: 200px;
+    --background: $background-light;
+    --border-color: $border-color;
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  .category-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    padding: 10px;
+
+    ion-button {
+      --background: $filter-button-color;
+      --color: white;
+      --border-radius: 6px;
+      margin: 2px;
+      padding: 5px 10px;
+      font-size: 0.8em;
+      transition: all 0.3s ease;
+
+      &:hover {
+        --background: darken($filter-button-color, 10%);
+        transform: scale(1.05);
+      }
+    }
+  }
+
+  ion-label {
+    color: $text-color-light;
+    font-weight: bold;
   }
 }
 
-.custom-searchbar {
-  width: 100%;
-  padding: 10px;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  margin: 10px 0;
+.search-input-container {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  margin-bottom: 20px;
+
+  ion-input {
+    flex-grow: 1;
+    --background: $background-light;
+    --color: $text-color-light;
+    --border-radius: 8px;
+    padding: 10px;
+    border: 1px solid $border-color;
+  }
+
+  ion-button {
+    height: 50px;
+    --border-radius: 8px;
+    transition: transform 0.2s;
+
+    &:hover {
+      transform: scale(1.05);
+    }
+  }
+}
+
+.loading-container, .no-results-container {
+  text-align: center;
+  padding: 30px;
+  color: $text-color-muted;
 }
 
 ion-content {
-  --background: #000000;
+  --background: $background-dark;
 }
 
 ion-list {
@@ -37,10 +99,17 @@ ion-list {
 }
 
 ion-item {
-  --background: rgb(0, 0, 0);
-  --border-radius: 10px;
-  margin: 10px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  --background: $background-light;
+  --border-color: $border-color;
+  border-radius: 12px;
+  margin: 10px 0;
+  padding: 15px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease;
+
+  &:hover {
+    transform: translateY(-5px);
+  }
 }
 
 ion-thumbnail {
@@ -50,36 +119,53 @@ ion-thumbnail {
 
   img {
     object-fit: cover;
-    border-radius: 5px;
+    border-radius: 8px;
+  }
+
+  .no-image-icon {
+    font-size: 50px;
+    color: $text-color-muted;
   }
 }
 
-.no-books-placeholder {
-  text-align: center;
-  color: #888;
-  padding: 20px;
-  background-color: white;
-  border-radius: 10px;
-  margin: 0 10px;
+ion-label {
+  h2 {
+    color: $text-color-light;
+    font-weight: bold;
+    margin-bottom: 5px;
+  }
+
+  p {
+    color: $text-color-muted;
+    font-size: 0.9em;
+  }
 }
 
-.no-image-icon {
-  font-size: 50px;
-  color: #ddd;
+ion-infinite-scroll {
+  color: $text-color-muted;
 }
 
-// Responsive adjustments
-@media (max-width: 600px) {
-  .search-type-buttons {
-    flex-wrap: wrap;
-    color: #ddd;
-    background-color: #ddd;
+// Responsive Design
+@media (max-width: 768px) {
+  .filter-select-container {
+    flex-direction: column;
 
-    ion-button {
-      flex-basis: calc(50% - 10px);
-      margin: 5px;
-      color: #ddd;
-      background-color: #ddd;
+    ion-item {
+      min-width: 100%;
+    }
+
+    .category-container {
+      ion-button {
+        flex-basis: calc(33.33% - 10px);
+      }
+    }
+  }
+
+  .search-input-container {
+    flex-direction: column;
+
+    ion-input, ion-button {
+      width: 100%;
     }
   }
 }

@@ -5,6 +5,7 @@ import { IonicModule, AlertController, ToastController } from '@ionic/angular';
 import { ReferenciaService, Referencia } from '../services/referencia.service';
 import { Observable,of  } from 'rxjs';
 import { AuthService } from '../services/auth.service';
+import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-historial',
@@ -14,7 +15,8 @@ import { AuthService } from '../services/auth.service';
   imports: [
     IonicModule,
     CommonModule,
-    FormsModule
+    FormsModule,
+    RouterModule
   ]
 })
 export class HistorialPage implements OnInit {

@@ -1,6 +1,12 @@
 <ion-header>
   <ion-toolbar>
     <ion-title>Biblioteca Online</ion-title>
+    <ion-buttons slot="end">
+      <ion-button [routerLink]="['/historial']">
+        <ion-icon name="time-outline"></ion-icon>
+        Historial
+      </ion-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
@@ -57,7 +63,7 @@
       </ion-input>
 
       <ion-button
-        (click)="searchBooks()" color="success"
+        (click)="searchBooks()" 
         color="primary">
         <ion-icon name="search"></ion-icon>
         Buscar
@@ -116,6 +122,18 @@
         </ion-button>
       </ion-item>
     </ion-list>
+
+    <!-- Botón para cargar más libros -->
+    <div class="load-more-container" *ngIf="books.length > 0 && books.length < totalItems">
+      <ion-button 
+        expand="block" 
+        color="primary" 
+        (click)="loadMoreBooksManually()"
+        [disabled]="isLoading">
+        <ion-icon name="add-circle-outline" slot="start"></ion-icon>
+        {{ isLoading ? 'Cargando...' : 'Cargar más libros' }}
+      </ion-button>
+    </div>
 
     <!-- Infinite Scroll -->
     <ion-infinite-scroll (ionInfinite)="loadMoreBooks($event)">

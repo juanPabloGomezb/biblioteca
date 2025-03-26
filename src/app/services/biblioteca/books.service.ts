@@ -88,28 +88,45 @@ export class BooksService {
   constructor(private http: HttpClient) {}
 
   getInitialBooks(maxResults = 10): Observable<BookResponse> {
+    const currentYear = new Date().getFullYear();
+    const queries = [
+      `published_date:${currentYear}`,
+      'best sellers',
+      'popular books',
+      'new releases',
+      'trending books'
+    ];
+  
+    // Selecciona una consulta aleatoria
+    const randomQuery = queries[Math.floor(Math.random() * queries.length)];
+  
     const params = {
-      q: 'best books 2024',
+      q: randomQuery,
       orderBy: 'relevance',
       key: this.apiKey,
       maxResults: maxResults.toString()
     };
-
+  
     return this.http.get<BookResponse>(this.apiUrl, { params }).pipe(
       catchError(this.handleError)
     );
   }
 
   searchBooks(search: BookSearch, startIndex = 0, maxResults = 10): Observable<BookResponse> {
+    // Si no hay consulta ni filtros, usa una búsqueda predeterminada
+    if (!search.query && (!search.filters || Object.values(search.filters).every(filter => filter === ''))) {
+      return this.getInitialBooks(maxResults);
+    }
+  
     // Build query parts
     let queryParts: string[] = [];
-
+  
     // Add main search query
     if (search.query) {
       queryParts.push(search.query);
     }
-
-    // Apply filters with type-safe checking
+  
+    // Apply filters con type-safe checking
     if (search.filters) {
       (Object.keys(search.filters) as FilterCategory[]).forEach((key) => {
         const value = search.filters?.[key];
@@ -135,15 +152,18 @@ export class BooksService {
         }
       });
     }
-
+  
+    // Si no hay términos de búsqueda, usa una consulta predeterminada
+    const searchQuery = queryParts.length > 0 ? queryParts.join('+') : 'best books 2024';
+  
     // Construct request parameters
     const params = {
-      q: queryParts.join('+'),
+      q: searchQuery,
       key: this.apiKey,
       startIndex: startIndex.toString(),
       maxResults: maxResults.toString()
     };
-
+  
     return this.http.get<BookResponse>(this.apiUrl, { params }).pipe(
       catchError(this.handleError)
     );
