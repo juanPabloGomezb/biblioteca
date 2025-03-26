@@ -1,12 +1,11 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpErrorResponse, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
-import { catchError, map } from 'rxjs/operators';
+import { catchError } from 'rxjs/operators';
 
 // Define interfaces
 export interface BookSearch {
   query: string;
-  type?: 'title' | 'author' | 'subject' | 'language';
   filters?: {
     titulo?: string;
     autor?: string;
@@ -37,9 +36,12 @@ export interface BookResponse {
   totalItems: number;
 }
 
-// Define a more flexible type for filter mappings
+// Define typed filter mappings
+type FilterCategory = 'titulo' | 'autor' | 'tema' | 'idioma';
 type FilterMappingsType = {
-  [key: string]: { [filterOption: string]: string }
+  [key in FilterCategory]: {
+    [category: string]: string
+  }
 };
 
 @Injectable({
@@ -49,7 +51,7 @@ export class BooksService {
   private apiUrl = 'https://www.googleapis.com/books/v1/volumes';
   private apiKey = 'AIzaSyDDfr-GyLMH_EhPhdQxRiGlodX25YIIHLc';
 
-  // Updated filter mappings with the new type
+  // Typed filter mappings
   private filterMappings: FilterMappingsType = {
     titulo: {
       'Novela': 'fiction',
@@ -62,8 +64,8 @@ export class BooksService {
     autor: {
       'Nacional': 'national author',
       'Internacional': 'international author',
-      'Contemporáneo': 'contemporary author',
-      'Clásico': 'classic author'
+      'Contemporáneo': 'contemporary',
+      'Clásico': 'classic'
     },
     tema: {
       'Educación': 'education',
@@ -85,7 +87,6 @@ export class BooksService {
 
   constructor(private http: HttpClient) {}
 
-  // Método para obtener libros destacados al inicio
   getInitialBooks(maxResults = 10): Observable<BookResponse> {
     const params = {
       q: 'best books 2024',
@@ -95,38 +96,47 @@ export class BooksService {
     };
 
     return this.http.get<BookResponse>(this.apiUrl, { params }).pipe(
-      map(response => {
-        console.log('Initial Books Response:', response);
-        return response;
-      }),
       catchError(this.handleError)
     );
   }
 
-  // Método de búsqueda actualizado para manejar filtros más robustamente
   searchBooks(search: BookSearch, startIndex = 0, maxResults = 10): Observable<BookResponse> {
-    // Construir la query base
+    // Build query parts
     let queryParts: string[] = [];
 
-    // Agregar término de búsqueda principal
+    // Add main search query
     if (search.query) {
       queryParts.push(search.query);
     }
 
-    // Aplicar filtros de manera más flexible
+    // Apply filters with type-safe checking
     if (search.filters) {
-      Object.entries(search.filters).forEach(([key, value]) => {
-        if (value) {
-          // Use type assertion to bypass the strict typing
-          const mapping = this.filterMappings[key as keyof FilterMappingsType];
-          if (mapping && mapping[value]) {
-            queryParts.push(`subject:${mapping[value]}`);
+      (Object.keys(search.filters) as FilterCategory[]).forEach((key) => {
+        const value = search.filters?.[key];
+        if (value && this.filterMappings[key]) {
+          const mappedValue = this.filterMappings[key][value];
+          if (mappedValue) {
+            // Different approach based on filter type
+            switch(key) {
+              case 'titulo':
+                queryParts.push(`subject:"${mappedValue}"`);
+                break;
+              case 'autor':
+                queryParts.push(`inauthor:"${mappedValue}"`);
+                break;
+              case 'tema':
+                queryParts.push(`subject:"${mappedValue}"`);
+                break;
+              case 'idioma':
+                queryParts.push(`langrestric:${mappedValue}`);
+                break;
+            }
           }
         }
       });
     }
 
-    // Construir parámetros de la solicitud
+    // Construct request parameters
     const params = {
       q: queryParts.join('+'),
       key: this.apiKey,
@@ -135,10 +145,6 @@ export class BooksService {
     };
 
     return this.http.get<BookResponse>(this.apiUrl, { params }).pipe(
-      map(response => {
-        console.log('Search Books Response:', response);
-        return response;
-      }),
       catchError(this.handleError)
     );
   }
